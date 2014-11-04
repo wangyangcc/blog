@@ -45,4 +45,13 @@ hexoclean(清除一些缓存数据) hexo generate 生成用于部署的博客
 
 [常用的hexo命令](http://hexo.io/docs/commands.html)
 
-未完待续…
+---
+
+上面是创建 github page 播客的方法，大家都知道，github 是国外的网站，访问速度实在不敢恭维，好在国内也有类似 github 这样的代码托管网站 `gitcafe`, 访问速度不错，而且也支持自定义域名，于是乎，就在`gitcafe`上建立了新博客。(由于之前在github上写的博客数不多，索性直接新建了，对于在github上面写博客多的人，建议把博客迁移到`gitcafe`)。
+
+具体建立`gitcafe page`的过程请查看：[https://gitcafe.com/GitCafe/Help/wiki/Pages-相关帮助#wiki](https://gitcafe.com/GitCafe/Help/wiki/Pages-相关帮助#wiki)
+
+建立过程中可能遇到的错误：
+
+- `Ooooops, page can't be found`，解决方法，需要建立 gitcafe-pages的分支，步骤请查看下图：
+- ``
