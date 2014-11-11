@@ -51,7 +51,12 @@ tags:
       $ sudo hexo clean //清楚缓存
       $ sudo hexo g     //生成博客的静态html文件
       $ sudo hexo d     //发布到`gitcafe.com`
-      
+   
+---
+### 使用GitHub来管理博客源文件
+
+ 请移步:[http://wuchong.me/blog/2014/01/17/use-github-to-manage-hexo-source/](http://wuchong.me/blog/2014/01/17/use-github-to-manage-hexo-source/)  
+ 
 ---
 ### 给博客添加插件
 
