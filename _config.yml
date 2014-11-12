@@ -3,16 +3,16 @@
 ## Source: https://github.com/hexojs/hexo/
 
 # Site
-title: ylf
+title: 王洋洋
 subtitle:
 description:
-author: ylf
+author: 王洋洋
 email:
 language: zh_CN
 
 # URL
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
-url: https://gitcafe.com/wangyangyang/wangyangyang
+url: https://www.wyy.so
 root: /
 permalink: :year/:month/:day/:title/
 tag_dir: tags

@@ -64,6 +64,38 @@ bgTask 是示例变量
 
 当一个后台`session`完成相关联的所有任务的时候，系统会重新加载终止的应用(假设`sessionSendsLaunchEvents`设置为`YES`，并且用户没有手动终止应用程序)并调用应用代理的`application:handleEventsForBackgroundURLSession:completionHandler: `方法。()在你实现相关代理的方法里，通过相同的标示符创建和之前一样的具有相同配置的`NSURLSessionConfiguration`对象和`NSURLSession`对象。系统会重新在新的`session `对象和之前完成的任务之间建立联系，并通过`session`对象的代理来报告状态。
 
-主要翻译自:[https://developer.apple.com/library/ios/documentation/iPhone/Conceptual/iPhoneOSProgrammingGuide/BackgroundExecution/BackgroundExecution.html#//apple_ref/doc/uid/TP40007072-CH4-SW8](https://developer.apple.com/library/ios/documentation/iPhone/Conceptual/iPhoneOSProgrammingGuide/BackgroundExecution/BackgroundExecution.html#//apple_ref/doc/uid/TP40007072-CH4-SW8)
+## 实现长时间执行的任务
+如果你请求了特殊的后台执行任务，那任务就能更多的执行时间而非暂停状态。下面的这些特殊的类型可以运行在后台：
+
+- 应用在后台播放`听得见`的声音，比如音乐播放器
+- 应用在后台录音
+- 应用在后台始终获得用户的位置更新，比如导航应用
+- 应用支持互联网电话(Voice over Internet Protocol，简称`VoIP`)
+- 应用需要定期的下载和处理更新的内容，比如报刊
+- 应用需要定期的获取从外部附件中获取更新
+
+应用必须申请支持这些服务来实现相关的服务(在info里面指定)并且使用系统提供的相关功能的框架来实现这些功能。让系统知道应用申请了那些服务，一些情况下是系统的相关功能框架阻止了你的应用进入暂停状态。
+
+## 了解进入后台的应用何时会被重新加载
+支持后台运行的应用可能由系统传入的事件来重新启动，如果应用除了用户手动终止外由于一些原因被终止了，当下面的事件发生时系统会重新加载应用：
+
+- 对于定位类的应用:1、系统会接受到符合应用配置的位置更新，2、设置进入或者离开注册过的地区(地区可以地理上的地区或者`iBeacon`地区)
+- 对于声音播放的应用(包括播放声音的应用或者使用麦克风的)，播放声音的框架需要应用处理一些数据。
+- 对于使用蓝牙的应用:1、作为核心角色的应用从周边的设备接收到数据,2、应用从连接中心接收到一个命令
+- 对于使用后台下载的应用:1、应用接收到推送的通知，并且通知里面包含key为`content-available`，值为`1`的字段；2、系统会在何时的实际唤醒应用当下载新的内容时候；3、对于使用[NSURLSession](https://developer.apple.com/library/ios/documentation/Foundation/Reference/NSURLSession_class/index.html#//apple_ref/occ/cl/NSURLSession)在后台下载内容的应用，所有任务中的任何一个执行完或者收到错误的时候
+- 报刊中一个任务下载完成后。
+
+大部分情况下，当用户手动终止应用后系统都不会重新加载应用。但有一个例外，那就是基于位置的应用，在iOS8和iOS8之后就算用户手动终止应用，系统也会重新加载应用。在其他情况下，在系统自动加载处于后台运行的应用前用户必须手动加载应用。
+
+## 成为一个可靠的后台运行程序
+在使用系统资源和硬件上，前台运行程序当对于后台运行程序有优先权。应用在后台运行的时候要适应这种差异并且调整自身的行为。具体点说，切换到后台的应用应该符合下面列出的：
+
+- `不在代码里调用任何OpenGL ES相关api.`在后台运行的时候不能创建[EAGLContext](https://developer.apple.com/library/ios/documentation/OpenGLES/Reference/EAGLContext_ClassRef/index.html#//apple_ref/occ/cl/EAGLContext)对象或任何`OpenGL ES`相关的绘画命令，使用这些会导致你的应用被系统立刻终止掉。应用必须保证在切换到后台的时候，任何之前注册的相关命令已经完成了。更多的关于处理OpenGL ES和进入推出后台运行的资料查看[Implementing a Multitasking-aware OpenGL ES Application](https://developer.apple.com/library/ios/documentation/3DDrawing/Conceptual/OpenGLES_ProgrammingGuide/ImplementingaMultitasking-awareOpenGLESApplication/ImplementingaMultitasking-awareOpenGLESApplication.html#//apple_ref/doc/uid/TP40008793-CH5)。
+- `在进入暂停状态前取消所有的Bonjour-related服务。`当你的应用切换到后台，在暂停前，应用应该注销并关闭相关的`sockets`网络服务。不管什么情况下一个暂停的应用都不能响应新回复的网络请求。如果你自己没有关闭`Bonjour `，系统会自动关闭处于暂停状态的`Bonjour`服务。
+- `准备好处理你基于网络套接字的连接失败`，系统会因一些原因取消掉`sockets`请求。
+- `在切换到后台的时候保存你的应用状态。`但系统可用内存很低的时候，后台运行的应用可能被清理掉以便节省内存空间。首先会清理暂停的应用，并且在清理前没有任何通知。更多的请查看[Preserving Your App’s Visual Appearance Across Launches](https://developer.apple.com/library/ios/documentation/iPhone/Conceptual/iPhoneOSProgrammingGuide/StrategiesforImplementingYourApp/StrategiesforImplementingYourApp.html#//apple_ref/doc/uid/TP40007072-CH5-SW2)
+- 待续
+
+翻译自:[https://developer.apple.com/library/ios/documentation/iPhone/Conceptual/iPhoneOSProgrammingGuide/BackgroundExecution/BackgroundExecution.html#//apple_ref/doc/uid/TP40007072-CH4-SW8](https://developer.apple.com/library/ios/documentation/iPhone/Conceptual/iPhoneOSProgrammingGuide/BackgroundExecution/BackgroundExecution.html#//apple_ref/doc/uid/TP40007072-CH4-SW8)
 
 持续更新中...
