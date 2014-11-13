@@ -67,6 +67,7 @@ tags:
 ### 建立过程中可能遇到的错误：
 
 - `Ooooops, page can't be found`，解决方法，需要建立 gitcafe-pages的分支，步骤请查看 [https://gitcafe.com/GitCafe/Help/wiki/Pages-相关帮助#wiki](https://gitcafe.com/GitCafe/Help/wiki/Pages-相关帮助#wiki)
+- `GitHub Error Message - Permission denied (publickey)`，解决方法`$git remote -v $git remote set-url origin git://github.com/YourDirectory/YourProject.git`两个命令运行完就可以了。
 
 ---
 ### 添加站长统计工具
@@ -102,3 +103,5 @@ jacman 主题默认支持`谷歌分析`统计工具，需要在`~/blog/themes/ja
 ---
 ### 有用的连接
 [常用的hexo命令](http://hexo.io/docs/commands.html)
+
+本文是原创文章，转载请注明出处

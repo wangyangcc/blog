@@ -75,6 +75,7 @@ bgTask 是示例变量
 - 应用需要定期的获取从外部附件中获取更新
 
 应用必须申请支持这些服务来实现相关的服务(在info里面指定)并且使用系统提供的相关功能的框架来实现这些功能。让系统知道应用申请了那些服务，一些情况下是系统的相关功能框架阻止了你的应用进入暂停状态。
+这部分关于每个部分的详细说明，请看原文，底部有链接。
 
 ## 了解进入后台的应用何时会被重新加载
 支持后台运行的应用可能由系统传入的事件来重新启动，如果应用除了用户手动终止外由于一些原因被终止了，当下面的事件发生时系统会重新加载应用：
@@ -94,8 +95,19 @@ bgTask 是示例变量
 - `在进入暂停状态前取消所有的Bonjour-related服务。`当你的应用切换到后台，在暂停前，应用应该注销并关闭相关的`sockets`网络服务。不管什么情况下一个暂停的应用都不能响应新回复的网络请求。如果你自己没有关闭`Bonjour `，系统会自动关闭处于暂停状态的`Bonjour`服务。
 - `准备好处理你基于网络套接字的连接失败`，系统会因一些原因取消掉`sockets`请求。
 - `在切换到后台的时候保存你的应用状态。`但系统可用内存很低的时候，后台运行的应用可能被清理掉以便节省内存空间。首先会清理暂停的应用，并且在清理前没有任何通知。更多的请查看[Preserving Your App’s Visual Appearance Across Launches](https://developer.apple.com/library/ios/documentation/iPhone/Conceptual/iPhoneOSProgrammingGuide/StrategiesforImplementingYourApp/StrategiesforImplementingYourApp.html#//apple_ref/doc/uid/TP40007072-CH5-SW2)
-- 待续
+- `切换到后台的时候移除不需要的强引用对象`,更多查看[Reduce Your Memory Footprint.](https://developer.apple.com/library/ios/documentation/iPhone/Conceptual/iPhoneOSProgrammingGuide/StrategiesforHandlingAppStateTransitions/StrategiesforHandlingAppStateTransitions.html#//apple_ref/doc/uid/TP40007072-CH8-SW28)
+- `进入暂停状态后停止使用共享的系统资源`，应用会和共享的系统资源(例如通讯录，日历等)发生相互作用，在进入暂停状态后应该停止使用这些资源。通常处于前台的应用有使用这些资源的优先权。当你的应用处于暂停状态，被系统发现使用共享的资源时，应用会被终止掉。
+- `避免更新你的windows和views`，因为你的windows和views都不再显示了，有个例外是更新你的屏幕截图。
+- `对外部配件的连接和取消连接请求作出相应`，对于连接外部配件的应用，系统会在应用切换到后天的时候自动发送断开连接的通知，当应用切换到前台的时候，系统会发送自动连接通知。更多查看[External Accessory Programming Topics.](https://developer.apple.com/library/ios/featuredarticles/ExternalAccessoryPT/Introduction/Introduction.html#//apple_ref/doc/uid/TP40009502)
+- `切换到后台的时候清楚现实的alerts资源`，由于系统不会自动取消显示，所以需要手动取消`UIAlertView`和`UIActionSheet`的显示。
+- `切换到后台的时候清楚敏感信息`，当应用切换到后台，系统会保存一个当前屏幕的快照，当下次用户再切换到应用的时候，会短暂的显示出来。在你的[applicationDidEnterBackground: ](https://developer.apple.com/library/ios/documentation/UIKit/Reference/UIApplicationDelegate_Protocol/index.html#//apple_ref/occ/intfm/UIApplicationDelegate/applicationDidEnterBackground:)方法返回前，你应该隐藏或者模糊掉可能显示在屏幕快照上的密码或者个人敏感信息。
+- `在后台运行的时候做最少的工作`，给后台运行应用的执行时间比起前台运行程序有更多的限制，花太多时间在后台执行的应用可能被系统终止掉。
+
+如果你实现了后台播放的应用，或者别的在后台运行的应用类型，你的应用以平常的方式响应信息。换句话说，系统会在可用内存很低的时候发送内存警告，在这种那个情况下系统会终止应用以便获得更多可用内存，系统会调用应用的[applicationWillTerminate: ](https://developer.apple.com/library/ios/documentation/UIKit/Reference/UIApplicationDelegate_Protocol/index.html#//apple_ref/occ/intfm/UIApplicationDelegate/applicationWillTerminate:)以便在终止前做最后的处理。
+
+## 退出后台运行
+如果你不想你的应用总是保持后台运行，你可以手动退出后台运行模式，在应用的`Info.plist`里面添加`UIApplicationExitsOnSuspend`key设置为`YES`,当应用程序退出时，它在不运行、 不活动，和积极的状态之间循环，永远不会进入后台运行或暂停的状态。当用户按home键终止应用时，[applicationWillTerminate: ](https://developer.apple.com/library/ios/documentation/UIKit/Reference/UIApplicationDelegate_Protocol/index.html#//apple_ref/occ/intfm/UIApplicationDelegate/applicationWillTerminate:)会被调用，大约在被系统终止掉前有五秒的时间来处理一些任务。
 
 翻译自:[https://developer.apple.com/library/ios/documentation/iPhone/Conceptual/iPhoneOSProgrammingGuide/BackgroundExecution/BackgroundExecution.html#//apple_ref/doc/uid/TP40007072-CH4-SW8](https://developer.apple.com/library/ios/documentation/iPhone/Conceptual/iPhoneOSProgrammingGuide/BackgroundExecution/BackgroundExecution.html#//apple_ref/doc/uid/TP40007072-CH4-SW8)
 
-持续更新中...
+水平所限，翻译的不对的地方还望指出哦~
